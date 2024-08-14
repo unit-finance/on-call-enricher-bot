@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "on_call_actions"
+version = "0.0.1"
+description = ""
+authors = ["Shahaf Franko <shahaf@unit.co>"]
+
+[tool.poetry.dependencies]
+cachetools = "^5.3.0"
+
+
+[tool.poetry.dev-dependencies]
+robusta-cli = "^0.10.14"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
