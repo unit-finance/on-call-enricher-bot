@@ -35,7 +35,7 @@ def show_on_call_search(event: ExecutionBaseEvent, params: SearchParams):
     answers = []
     try:
         if params.search_term in lru_cache:
-            answers = lru_cache[params.search_term]
+            answers = [lru_cache[params.search_term]]  # Wrap the cached result in a list
         else:
             start_time = time.time()
             url_with_param = f"{params.on_call_enricher_url}?{urllib.parse.urlencode({'search_term': params.search_term})}"
@@ -46,12 +46,15 @@ def show_on_call_search(event: ExecutionBaseEvent, params: SearchParams):
                 response_json = response.json()
                 time_taken = time.time() - start_time
                 logging.info(f"Response from on-call enricher: {response_json}")
-                result = response_json.get('data', {}).get('result', '')
+                result = response_json.get('data', {}).get('results', '')
                 lru_cache[params.search_term] = result  # Store the response in the cache
                 answers.append(result)
+                answers.append(f"\n\n ---")
+                answers.append(f"\n\n | Time taken: {time_taken:.2f} seconds |")
 
-            answers.append(f"\n\n ---")
-            answers.append(f"\n\n | Time taken: {time_taken:.2f} seconds |")
+            else:
+                answers.append(f"Error calling On-call enricher: No response")
+                raise
 
     except Exception as e:
         answers.append(f"Error calling On-call enricher: {e}")
